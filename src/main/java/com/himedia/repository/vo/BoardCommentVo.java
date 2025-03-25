@@ -13,7 +13,8 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class BoardWalkRequestVo {
+public class BoardCommentVo {
+
 	//board 필드
 	private Integer boardId;
 	private Integer userId;
@@ -26,11 +27,8 @@ public class BoardWalkRequestVo {
 	private Integer localGu;
 	private Timestamp regDate;
 	private Timestamp update;
-	//walk 필드
-	private Integer boardWalkId;
-	private Integer walkCategory;
-	//photo 필드
-	private Integer boardPhotoId;
-	private String boardPhotoName;
-	private String boardPhotoSrc;
+	//comment 필드
+	private Integer boardPetstarCommentId;
+	private String commentUser;
+	private String commentContent;
 }
