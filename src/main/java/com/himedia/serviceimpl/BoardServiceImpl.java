@@ -20,11 +20,16 @@ import com.himedia.repository.vo.BoardTradeVo;
 import com.himedia.repository.vo.BoardVo;
 import com.himedia.repository.vo.BoardWalkRequestVo;
 import com.himedia.repository.vo.BoardWalkVo;
+import com.himedia.repository.vo.ChatroomVo;
 import com.himedia.services.BoardService;
+import com.himedia.services.ChatroomService;
 import com.himedia.services.PhotoService;
+
+import lombok.RequiredArgsConstructor;
 
 
 @Service
+@RequiredArgsConstructor
 public class BoardServiceImpl implements BoardService {
 	@Autowired
 	private BoardMapper boardMapper;
@@ -36,12 +41,28 @@ public class BoardServiceImpl implements BoardService {
 	private BoardHireMapper boardHireMapper;
 	@Autowired
 	private PhotoService photoService;
+	private final ChatroomService chatroomService;
 	
 	// 모든 게시물 출력
 	@Override
 	public List<BoardVo> selectAllBoard() {
 		List<BoardVo> boardList = boardMapper.selectAllBoard();
 		return boardList;
+	}
+	
+	@Override
+	public List<BoardWalkVo> getPopularBoardWalk() {
+	    return boardWalkMapper.selectPopularBoardWalk();
+	}
+	
+	@Override
+	public List<BoardHireVo> getPopularBoardHire() {
+	    return boardHireMapper.selectPopularBoardHire();
+	}
+	
+	@Override
+	public List<BoardTradeVo> getPopularBoardTrade() {
+	    return boardTradeMapper.selectPopularBoardTrade();
 	}
 
 	// 하나의 게시물 출력
@@ -65,6 +86,7 @@ public class BoardServiceImpl implements BoardService {
 				.build();
 				
 		System.out.println(board);
+		// 보드 생성
 		int result = boardMapper.insertBoard(board);
 		System.out.println(board);
 		BoardWalkVo boardWalkVo = BoardWalkVo.builder()
@@ -72,8 +94,17 @@ public class BoardServiceImpl implements BoardService {
 				.walkCategory(boardWalkRequestVo.getWalkCategory())
 				.build();
 		System.out.println(boardWalkVo);
+		// 보드 워크 생성
 		int result2 = boardWalkMapper.insertBoardWalk(boardWalkVo);
-		
+		ChatroomVo chatroomVo = ChatroomVo.builder()
+				.boardId(board.getBoardId())
+				.chatroomName(boardWalkRequestVo.getUserId()+ "님의 방")
+				.build();
+		int result3 = chatroomService.insertChatroom(chatroomVo);
+		if (result3 == 0) {
+			throw new IOException();
+		}
+		// 이미지 존재할 시 
 		if (!file.isEmpty()) {
 			photoService.uploadBoardPicture(file, board.getBoardId());
 		}
